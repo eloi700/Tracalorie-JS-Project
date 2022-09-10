@@ -22,34 +22,56 @@ const ItemCtrl = (function () {
 
   // Public Methods
   return {
-    logData: function(){
-        return data;
-    }
-  }
-
-
+    // Get Items / Data
+    getItems: function () {
+      return data.items;
+    },
+    logData: function () {
+      return data;
+    },
+  };
 })();
 
 // UI Controller - Populating the List of Items
 const UICtrl = (function () {
-
-    // Public Methods
-    return{
-
+    const UISelectors = {
+        itemList : '#item-list'
     }
 
+  // Public Methods
+  return {
+    populateItemList: function (items) {
+
+      let html = "";
+      items.forEach(function (item) {
+        html += `
+        <li class="collection-item" id="item-${item.id}">
+          <strong>${item.name}: </strong>
+          <em>${item.calories}</em>
+          <a href="#" class="secondary-content">
+            <i class="fa fa-pencil edit-item"></i>
+          </a>
+        </li>`;
+      });
+
+    // Insert List Items
+    document.querySelector(UISelectors.itemList).innerHTML = html;
+    },
+  };
 })();
 
 // App Controller (When the application loads)
 const AppCtrl = (function (ItemCtrl, UICtrl) {
+  // Public Methods
+  return {
+    init: function () {
+      // Fetch Items from Data Structure (ItemsCtrl)
+      const items = ItemCtrl.getItems();
 
-    // Public Methods
-    return{
-        init: function(){
-            console.log('initializing app...');
-        }
-    }
-
+      // Populate List with Items
+      UICtrl.populateItemList(items);
+    },
+  };
 })(ItemCtrl, UICtrl);
 
 // Initializing App
