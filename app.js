@@ -1,6 +1,10 @@
+// =============================================//
 // Storage Controller
+// =============================================//
 
+// =============================================//
 // Item Controller
+// =============================================//
 const ItemCtrl = (function () {
   // Item Constructor
   const Item = function (id, name, calories) {
@@ -46,6 +50,17 @@ const ItemCtrl = (function () {
 
       return newItem;
     },
+    getTotalCalories: function () {
+      let total = 0;
+      // Loop thru items and add calories
+      data.items.forEach(function (item) {
+        total += item.calories;
+      });
+      // Set total calories in data structure
+      data.totalCalories = total;
+      // Return total
+      return data.totalCalories;
+    },
     logData: function () {
       return data;
       // console.log(data);
@@ -53,13 +68,17 @@ const ItemCtrl = (function () {
   };
 })();
 
-// UI Controller - Populating the List of Items
+// =============================================//
+//UI Controller - Populating the List of Items
+// =============================================//
+
 const UICtrl = (function () {
   const UISelectors = {
     itemList: "#item-list",
     addBtn: ".add-btn",
     itemNameInput: "#item-name",
     itemCaloriesInput: "#item-calories",
+    totalCalories: ".total-calories",
   };
 
   // Public Methods
@@ -89,7 +108,6 @@ const UICtrl = (function () {
     },
 
     addListItem: function (item) {
-
       // Show the list
       document.querySelector(UISelectors.itemList).style.display = "block";
       // Create li element
@@ -116,13 +134,19 @@ const UICtrl = (function () {
     hideList: function () {
       document.querySelector(UISelectors.itemList).style.display = "none";
     },
+    showTotalCalories: function (ovrallTotalCalories) {
+      document.querySelector(UISelectors.totalCalories).textContent =
+      ovrallTotalCalories;
+    },
     getSelectors: function () {
       return UISelectors;
     },
   };
 })();
 
+// =============================================//
 // App Controller (When the application loads)
+// =============================================//
 const AppCtrl = (function (ItemCtrl, UICtrl) {
   // Load Event Listeners
   const loadEventListeners = function () {
@@ -145,6 +169,11 @@ const AppCtrl = (function (ItemCtrl, UICtrl) {
       const newItem = ItemCtrl.addItem(input.name, input.calories);
       // Add item to UI list
       UICtrl.addListItem(newItem);
+      //Get total calories
+      const totalCalories = ItemCtrl.getTotalCalories();
+      // Add total calories to UI
+      UICtrl.showTotalCalories(totalCalories);
+
       // Clear fields (item name & calories)
       UICtrl.clearInput();
     }
@@ -165,9 +194,13 @@ const AppCtrl = (function (ItemCtrl, UICtrl) {
         // Populate list with items
         UICtrl.populateItemList(items);
       }
-
       // Populate List with Items
       UICtrl.populateItemList(items);
+
+      //Get total calories
+      const totalCalories = ItemCtrl.getTotalCalories();
+      // Add total calories to UI
+      UICtrl.showTotalCalories(totalCalories);
 
       // Load Event Listeners
       loadEventListeners();
@@ -175,5 +208,7 @@ const AppCtrl = (function (ItemCtrl, UICtrl) {
   };
 })(ItemCtrl, UICtrl);
 
+// =============================================//
 // Initializing App
+// =============================================//
 AppCtrl.init();
