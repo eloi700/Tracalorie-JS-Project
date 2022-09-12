@@ -12,9 +12,9 @@ const ItemCtrl = (function () {
   // Data Structure / State
   const data = {
     items: [
-      { id: 0, name: "Steak Dinner", calories: 1200 },
-      { id: 1, name: "Cookie", calories: 900 },
-      { id: 2, name: "Egg", calories: 300 },
+      //   { id: 0, name: "Steak Dinner", calories: 1200 },
+      //   { id: 1, name: "Cookie", calories: 900 },
+      //   { id: 2, name: "Egg", calories: 300 },
     ],
     currentItem: null,
     totalCalories: 0,
@@ -35,7 +35,7 @@ const ItemCtrl = (function () {
         ID = 0;
       }
       // Calories to number
-      // calories = parseInt(calories)
+      // calories = parseInt(calories) OR
       calories = +calories;
 
       // Create new item
@@ -48,7 +48,7 @@ const ItemCtrl = (function () {
     },
     logData: function () {
       return data;
-    // console.log(data);
+      // console.log(data);
     },
   };
 })();
@@ -87,6 +87,35 @@ const UICtrl = (function () {
         calories: document.querySelector(UISelectors.itemCaloriesInput).value,
       };
     },
+
+    addListItem: function (item) {
+
+      // Show the list
+      document.querySelector(UISelectors.itemList).style.display = "block";
+      // Create li element
+      const li = document.createElement("li");
+      // Add class & id name
+      li.className = "collection-item";
+      li.id = `item-${item.id}`;
+      // Add html
+      li.innerHTML = `<strong>${item.name}: </strong>
+        <em>${item.calories}</em>
+        <a href="#" class="secondary-content">
+          <i class="fa fa-pencil edit-item"></i>
+        </a>`;
+      // Insert item
+      document
+        .querySelector(UISelectors.itemList)
+        .insertAdjacentElement("beforeend", li);
+    },
+    // Clear the fields (item name & calories)
+    clearInput: function () {
+      document.querySelector(UISelectors.itemNameInput).value = "";
+      document.querySelector(UISelectors.itemCaloriesInput).value = "";
+    },
+    hideList: function () {
+      document.querySelector(UISelectors.itemList).style.display = "none";
+    },
     getSelectors: function () {
       return UISelectors;
     },
@@ -114,6 +143,10 @@ const AppCtrl = (function (ItemCtrl, UICtrl) {
     if (input.name !== "" && input.calories !== "") {
       // Add item
       const newItem = ItemCtrl.addItem(input.name, input.calories);
+      // Add item to UI list
+      UICtrl.addListItem(newItem);
+      // Clear fields (item name & calories)
+      UICtrl.clearInput();
     }
 
     e.preventDefault();
@@ -124,6 +157,14 @@ const AppCtrl = (function (ItemCtrl, UICtrl) {
     init: function () {
       // Fetch Items from Data Structure (ItemsCtrl)
       const items = ItemCtrl.getItems();
+
+      // Check if any items
+      if (items.length === 0) {
+        UICtrl.hideList();
+      } else {
+        // Populate list with items
+        UICtrl.populateItemList(items);
+      }
 
       // Populate List with Items
       UICtrl.populateItemList(items);
